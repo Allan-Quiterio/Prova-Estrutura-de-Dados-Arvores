@@ -1,6 +1,8 @@
+from array import array
+import os
 from typing import Deque
 
-ROOT = 'r'
+ROOT = 'root'
 
 class No:
     def __init__(self, dado):
@@ -24,14 +26,14 @@ class ArvoreBinaria:
         else:
             self.raiz = None
     
-    def percurso_em_nivel(self, no=None):
-        if no == None:
+    def percurso_em_nivel(self, no=ROOT):
+        if no == ROOT:
             no = self.raiz
 
         fila = Deque()
         fila.append(no)
         while len(fila):
-            no = fila.pop()
+            no = fila.popleft()
             if no.esquerda:
                 fila.append(no.esquerda)
             if no.direita:
@@ -46,7 +48,7 @@ class ArvoreBinariaDeBusca(ArvoreBinaria):
         i = self.raiz
         while(i):
             pai = i
-            if valor < i.data:
+            if valor < i.dado:
                 i = i.esquerda
             else:
                 i = i.direita
@@ -58,30 +60,30 @@ class ArvoreBinariaDeBusca(ArvoreBinaria):
             pai.direita = No(valor)
     
     #Implica em não precisar definir um valor fixo para no na função _procurar
-    def procurar(self, valor):
-        return self.procurar_(valor, self.raiz)
+    def pesquisar(self, valor):
+        return self.pesquisar_(valor, self.raiz)
 
-    def procurar_(self, valor, no):
+    def pesquisar_(self, valor, no):
         if no is None:
             return no
         if no.dado == valor:
             return ArvoreBinariaDeBusca(no)
         if valor < no.dado:
-            return self.procurar_(valor, no.esquerda)
-        return self.procurar_(valor, no.direita)
+            return self.pesquisar_(valor, no.esquerda)
+        return self.pesquisar_(valor, no.direita)
     
-    def minimo(self, no=ROOT):
+    def menor(self, no=ROOT):
         if no == ROOT:
             no = self.raiz
         while no.esquerda:
             no = no.esquerda
         return no.dado
 
-    def maximo(self, no=ROOT):
+    def maior(self, no=ROOT):
         if no == ROOT:
             no = self.raiz
-        while no.esquerda:
-            no = no.esquerda
+        while no.direita:
+            no = no.direita
         return no.dado
 
     def remover(self, valor, no=ROOT):
@@ -112,16 +114,50 @@ class ArvoreBinariaDeBusca(ArvoreBinaria):
 #Cadastro de clientes de acordo com a quantidade de horas trabalhadas
 # Mostrar, inserir e remover algum funcionário
 if __name__ == "__main__":
-    """ Função usando inserção
-    def extended_tree():
-        values = [61, 89, 66, 43, 51, 16, 55, 11, 79, 77, 82, 32, 100, 90]
-        tree = ArvoreBinariaDeBusca()
-        for v in values:
-            tree.inserir(v)
-        return tree"""
+    arvore = ArvoreBinariaDeBusca()
+    vetor = []
 
-""" Implementando os dados na mão
-tree = ArvoreBinariaDeBusca()
-tree.inserir(10)
-tree.inserir(5)
-tree.percurso_em_nivel()"""
+    print('-'*75)
+    print("Seja bem vindo ao cadastro de matrículas!")
+    print('-'*75)
+    while True:
+        print('[1] Adicionar uma nova matrícula ao sistema\n[2] Ver a árvore de matrículas cadastradas')
+        print('[3] Matrícula mais antiga\n[4] Matrícula mais recente\n[5] Procurar por matrícula')
+        print('[6] Remover uma matrícula\n[7]Sair')
+        
+        resp = int(input('Opção: '))
+        os.system('cls')
+        
+        if resp < 1 or resp > 7:
+            print("Opção não encontrada, digite um valor válido")
+
+        elif resp == 7:
+            print('Saindo...')
+            break
+
+        elif resp == 1:
+            num = input(("Digite a matrícula do funcionário para incluirmos em nosso banco de dados: "))
+            vetor.append(num)
+            arvore.inserir(num)
+        elif resp == 2:
+            arvore.percurso_em_nivel()
+            print('\n')
+        elif resp == 3:
+            print(arvore.menor())
+        elif resp == 4:
+            print(arvore.maior())
+        elif resp == 5:
+            procura = input('Digite a matrícula a ser procurada no banco de dados: ')
+            r = arvore.pesquisar(procura)
+            if r is None:
+                print(procura, "Matrícula não encontrado")
+            else:
+                print(procura, 'está no nosso sistema')
+        """else:
+            rem = input('Qual item você quer remover: ')
+            r = arvore.pesquisar(rem)
+            if r is None:
+                print('Essa matrícula não se encontra em nosso banco')
+            else:
+                arvore.remover(rem)
+            print('\n')"""
